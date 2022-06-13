@@ -46,7 +46,6 @@ export function App() {
   //This function is called when a componenet is updated to check what action to display given the state variables
   function checkAction() {
     if(categoryState === 0 && restaurantState === 0){
-      
       setAction("start");
     } else if(categoryState !== 0 && restaurantState === 0) {
       setAction("onlyCategory");
