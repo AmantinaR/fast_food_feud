@@ -1,7 +1,16 @@
-import * as React from "react"
+import * as React from "react";
 // IMPORT ANY NEEDED COMPONENTS HERE
-import { createDataSet } from "./data/dataset"
-import "./App.css"
+import { createDataSet } from "./data/dataset";
+import "./App.css";
+import Header from "./components/Header/Header.jsx";
+import Instructions from "./components/Instructions/Instructions";
+import Chip from "./components/Chip/Chip";
+import NutritionalLabel from "./components/NutritionalLabel/NutritionalLabel";
+import CategoryColumn from "./components/CategoryColumn";
+import RestaurantRows from "./components/RestaurantRows";
+import MenuDisplay from "./components/MenuDisplay";
+import DataSource from "./components/DataSource";
+
 
 // don't move this!
 export const appInfo = {
@@ -16,50 +25,66 @@ export const appInfo = {
     noSelectedItem: `Almost there! Choose a menu item and you'll have the fast food facts right at your fingertips!`,
     allSelected: `Great choice! Amazing what a little knowledge can do!`,
   },
-}
+};
 // or this!
-const { data, categories, restaurants } = createDataSet()
+const { data, categories, restaurants } = createDataSet();
+
+
 
 export function App() {
+  //STATE
+  const [categoryState, setCategory] = React.useState(0);
+  const [restaurantState, setRestaurant] = React.useState(0);
+  const [itemState, setItem] = React.useState(0);
+  const [actionState, setAction] = React.useState("start");
+
+
+  let currentMenuItems = data.filter((item) => {
+    return item.restaurant === restaurantState && item.food_category === categoryState;  
+  });
+
+  //This function is called when a componenet is updated to check what action to display given the state variables
+  function checkAction() {
+    if(categoryState === 0 && restaurantState === 0){
+      
+      setAction("start");
+    } else if(categoryState !== 0 && restaurantState === 0) {
+      setAction("onlyCategory");
+    } else if(categoryState === 0 && restaurantState !== 0) {
+      setAction("onlyRestaurant");
+    } else if(itemState === 0) {
+      setAction("noSelectedItem");
+    } else {
+      setAction("allSelected");
+    }
+  }
+  
+  
+
   return (
     <main className="App">
       {/* CATEGORIES COLUMN */}
-      <div className="CategoriesColumn col">
-        <div className="categories options">
-          <h2 className="title">Categories</h2>
-          {/* YOUR CODE HERE */}
-        </div>
-      </div>
-
+      <CategoryColumn categories={categories} categoryState={categoryState} checkAction={checkAction} setCategory={setCategory} setItem={setItem}></CategoryColumn>
+      
       {/* MAIN COLUMN */}
       <div className="container">
         {/* HEADER GOES HERE */}
+        <Header title={appInfo.title} tagline={appInfo.tagline} description={appInfo.description}></Header>
 
         {/* RESTAURANTS ROW */}
-        <div className="RestaurantsRow">
-          <h2 className="title">Restaurants</h2>
-          <div className="restaurants options">{/* YOUR CODE HERE */}</div>
-        </div>
+        <RestaurantRows restaurants={restaurants} restaurantState={restaurantState} setRestaurant={setRestaurant} setItem={setItem} itemState={itemState} categoryState={categoryState} checkAction={checkAction} setAction={setAction}></RestaurantRows>
+        
 
         {/* INSTRUCTIONS GO HERE */}
-
+        <Instructions instructions={appInfo.instructions[actionState]}></Instructions>
         {/* MENU DISPLAY */}
-        <div className="MenuDisplay display">
-          <div className="MenuItemButtons menu-items">
-            <h2 className="title">Menu Items</h2>
-            {/* YOUR CODE HERE */}
-          </div>
+        <MenuDisplay currentMenuItems={currentMenuItems} restaurants={restaurants} restaurantState={restaurantState} setRestaurant={setRestaurant} setItem={setItem} itemState={itemState} categoryState={categoryState} checkAction={checkAction} setAction={setAction}></MenuDisplay>
+        
+        <DataSource source={appInfo.dataSource}></DataSource>
 
-          {/* NUTRITION FACTS */}
-          <div className="NutritionFacts nutrition-facts">{/* YOUR CODE HERE */}</div>
-        </div>
-
-        <div className="data-sources">
-          <p>{appInfo.dataSource}</p>
-        </div>
       </div>
     </main>
   )
-}
+};
 
-export default App
+export default App;
