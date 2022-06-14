@@ -22,7 +22,7 @@ export function NutritionalLabelFact(props) {
   return (
     <li className="nutrition-fact">
       <span className="fact-label">{props.label}</span>{" "}
-      <span className="fact-value">{props.item[props.attribute]}</span>
+      <span className="fact-value">{props.attribute !== "fiber" ? props.item[props.attribute] : props.item["dietary_fiber"]}</span>
     </li>
   )
 }
